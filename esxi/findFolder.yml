@@ -1,0 +1,15 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: yes
+  
+  tasks:
+  - name: Find Guest's Folder using name
+    community.vmware.vmware_guest_find:
+      hostname: "{{ ian_esxi_hostAddr }}"
+      username: "{{ ian_esxi_username }}"
+      password: "{{ ian_esxi_pw }}"
+      validate_certs: no
+      name: router-opnsense
+    

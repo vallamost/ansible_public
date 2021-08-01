@@ -1,0 +1,9 @@
+---
+
+- name: Gather vmware host facts
+  community.vmware.vmware_host_facts:
+    hostname: "10.0.0.10"
+    username: "root"
+    password: "{{ ian_esxi_pw }}"
+  register: host_facts
+  delegate_to: localhost

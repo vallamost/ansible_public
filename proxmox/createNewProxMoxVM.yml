@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  gather_facts: yes
+  vars:
+    api_user: {{ api_user }}
+    api_pw: {{ api_pw }}
+    api_host: {{ api_host }}
+    vmname: "TestFromAnsible3"
+    node: "old-steady"
+  tasks:
+  - include_vars: private_proxmox_vars.yml
+  - name: Create new VM with minimal options
+    community.general.proxmox_kvm:
+      api_user: "{{ api_user }}"
+      api_password:  "{{ api_pw }}"
+      api_host: "{{ api_host }}"
+      name: "{{ vmname }}"
+      node: "{{ node }}"
+      state: present
+      timeout: 300
+      cores: 1
+      memory: 2048
+      boot: d
+      ide: '{"ide0":"SASPOOL-ISO:iso/ubuntu-20.04-live-server-amd64.iso,media=cdrom"}'
+      virtio: '{"virtio0":"Saspool-VM:12"}'
+      net:
+        net0: 'virtio,bridge=vmbr2'
+    register: wait
+
+  - name: Let it settle
+    pause:
+      seconds: 5
+
+  - name: Start the VM
+    proxmox_kvm:
+      api_user: "{{ api_user }}"
+      api_password:  "{{ api_pw }}"
+      api_host: "{{ api_host }}"
+      node: "{{ node }}"
+      name: "{{ vmname }}"
+      state: started      

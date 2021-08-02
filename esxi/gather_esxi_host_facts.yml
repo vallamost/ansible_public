@@ -1,0 +1,22 @@
+---
+
+# To use: - Specify your VM host IP (e.g. ESXi host IP) in var_esxi_host_addr
+#         - Have your global variables configured in your inventory for the U & P
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+    var_esxi_host_addr: "10.0.0.10"
+
+  tasks:
+  - name: "Gathering VMware host facts for {{ var_esxi_host_addr }}"
+    community.vmware.vmware_host_facts:
+      hostname: "{{ var_esxi_host_addr }}"
+      username: "{{ gbl_esxi_host1_username }}"
+      password: "{{ gbl_esxi_host1_pw }}"
+      validate_certs: no # ignore self signed certs
+    register: vmware_host_facts #register the output to this variable name.
+
+  - name: Printing the VMware host facts of {{ var_esxi_host_addr }}"
+    debug:
+      msg: "{{ vmware_host_facts }}"

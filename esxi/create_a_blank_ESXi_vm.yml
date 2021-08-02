@@ -1,0 +1,45 @@
+---
+
+# example usage:
+# set up global vars (see README)
+# *cd to folder of this playbook*
+# ansible-playbook create_a_blank_ESXi_vm.yml --extra-vars "var_new_vm_name=test_from_ansible1"
+# You should now see a VM created with the name of test_from_ansible1 in ESXi.
+# If you don't pass a variable in the CLI it'll default the VM name to test_vm_0001
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  remote_user: root
+  vars:
+    var_new_vm_name: "test_vm_0001"
+
+  tasks:
+    - name: "Create a blank virtual machine (named: {{ var_new_vm_name }}) on given ESXi host (does not mount a bootable ISO)"
+      vmware_guest:
+        hostname: "{{ gbl_esxi_host1_addr }}"
+        username: "{{ gbl_esxi_host1_username }}"
+        password: "{{ gbl_esxi_host1_pw }}"
+        datacenter: ha-datacenter
+        validate_certs: no
+        folder: ''
+        name: "{{ var_new_vm_name }}"
+        state: poweredoff
+        guest_id: ubuntu64Guest #change this if you aren't going to use Ubuntu.
+        disk:
+        - size_gb: 10
+          type: thin
+          datastore: DS1
+        hardware:
+          memory_mb: 512
+          num_cpus: 4
+          scsi: paravirtual
+        networks:
+        - name: VM Network
+          device_type: vmxnet3
+      delegate_to: localhost
+      register: new_vm
+
+    - name: Describe the new VM to the screen
+      debug:
+        msg: "{{ new_vm }}"

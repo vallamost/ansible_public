@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    var_node: "old-steady"
+    var_container_hostname: "ansible-lxc-test1"
+  tasks:
+  - name: Create new ProxMox container with minimal options
+    community.general.proxmox:
+      api_user: "{{ gbl_prox_api_user }}"
+      api_password: "{{ gbl_prox_api_pw }}"
+      api_host: "{{ gbl_prox_api_host }}"
+      node: "{{ var_node }}"
+      password: 123456 #instance root password
+      ostemplate: 'NVME-VM:vztmpl/ubuntu-20.04-standard_20.04-1_amd64.tar.gz' #this is tricky as shit to figure out the correct path. I'll save you some time, run `pvesm list DATASTORE_NAME` to find the full path to container images.
+      netif: '{"net0":"name=eth0,gw=192.168.4.1,ip=192.168.4.220/24,bridge=vmbr2"}'
+      nameserver: 192.168.4.1
+      cores: 1
+      memory: 512
+      storage: "NVME-VM" #Your datastore friendly name
+      hostname: "{{ var_container_hostname }}"

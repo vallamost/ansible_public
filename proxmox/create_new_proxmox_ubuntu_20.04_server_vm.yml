@@ -1,21 +1,18 @@
 ---
 - hosts: localhost
-  gather_facts: yes
+  gather_facts: no
   vars:
-    api_user: {{ api_user }}
-    api_pw: {{ api_pw }}
-    api_host: {{ api_host }}
-    vmname: "TestFromAnsible3"
-    node: "old-steady"
+    var_vmname: "TestFromAnsible1"
+    var_proxmox_node: "old-steady"
   tasks:
   - include_vars: private_proxmox_vars.yml
   - name: Create new VM with minimal options
     community.general.proxmox_kvm:
-      api_user: "{{ api_user }}"
-      api_password:  "{{ api_pw }}"
-      api_host: "{{ api_host }}"
-      name: "{{ vmname }}"
-      node: "{{ node }}"
+      api_user: "{{ gbl_prox_api_user }}"
+      api_password: "{{ gbl_prox_api_pw }}"
+      api_host: "{{ gbl_prox_api_host }}"
+      name: "{{ var_vmname }}"
+      node: "{{ var_proxmox_node }}"
       state: present
       timeout: 300
       cores: 1
@@ -31,11 +28,11 @@
     pause:
       seconds: 5
 
-  - name: Start the VM
+  - name: Start the new ProxMox VM
     proxmox_kvm:
-      api_user: "{{ api_user }}"
-      api_password:  "{{ api_pw }}"
-      api_host: "{{ api_host }}"
-      node: "{{ node }}"
-      name: "{{ vmname }}"
+      api_user: "{{ gbl_prox_api_user }}"
+      api_password: "{{ gbl_prox_api_pw }}"
+      api_host: "{{ gbl_prox_api_host }}"
+      name: "{{ var_vmname }}"
+      node: "{{ var_proxmox_node }}"
       state: started      

@@ -1,0 +1,22 @@
+---
+
+# To use: - Specify your VM name in var_esxi_vm_name or via the CLI.
+#         - Have your global variables configured in your global inventory (see README)
+
+- hosts: localhost
+  connection: local
+  vars:
+    var_esxi_vm_name: "router-opnsense"
+  tasks:
+  - name: "Getting the {{ var_esxi_vm_name }} VM's datastore location by VM name from {{ gbl_esxi_host1_addr }}"
+    community.vmware.vmware_guest_find:
+      hostname: "{{ gbl_esxi_host1_addr }}"
+      username: "{{ gbl_esxi_host1_username }}"
+      password: "{{ gbl_esxi_host1_pw }}"
+      validate_certs: no
+      name: "{{ var_esxi_vm_name }}"
+    register: vm_datastore_facts #assign task output to variable.
+
+  - name: "Printing the datstore location of {{ var_esxi_vm_name }} to the screen"
+    debug:
+      msg: "{{ vm_datastore_facts }}"    
